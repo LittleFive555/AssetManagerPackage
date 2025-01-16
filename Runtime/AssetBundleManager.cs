@@ -6,9 +6,9 @@ namespace EdenMeng.AssetManager
 {
     public interface IAssetBundleLoader
     {
-        public AssetBundle LoadBundleAndDependencies(string assetBundleName);
-        public IEnumerator LoadBundleAndDependenciesAsync(string assetBundleName, Action<AssetBundle> onComplete);
-        public void UnloadBundleAndDependencies(string assetBundleName);
+        AssetBundle LoadBundleAndDependencies(string assetBundleName);
+        IEnumerator LoadBundleAndDependenciesAsync(string assetBundleName, Action<AssetBundle> onComplete);
+        void UnloadBundleAndDependencies(string assetBundleName);
     }
 
     public class AssetBundleManager

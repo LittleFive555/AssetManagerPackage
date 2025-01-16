@@ -5,11 +5,11 @@ namespace EdenMeng.AssetManager
 {
     public interface IAssetLoader
     {
-        public T LoadAsset<T>(string path) where T : UnityEngine.Object;
+        T LoadAsset<T>(string path) where T : UnityEngine.Object;
 
-        public IEnumerator LoadAssetAsync<T>(string path, Action<T> onComplete) where T : UnityEngine.Object;
+        IEnumerator LoadAssetAsync<T>(string path, Action<T> onComplete) where T : UnityEngine.Object;
 
-        public void UnloadAsset<T>(T asset) where T : UnityEngine.Object;
+        void UnloadAsset<T>(T asset) where T : UnityEngine.Object;
     }
 
     public class AssetManager
