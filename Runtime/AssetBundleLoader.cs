@@ -100,7 +100,7 @@ namespace EdenMeng.AssetManager
             {
                 onComplete += (bundle) =>
                 {
-                    if (_loadedBundles.TryGetValue(bundleName, out var loadedBundle))
+                    if (_loadedBundles.TryGetValue(bundleName, out loadedBundle))
                         loadedBundle.UseCount++;
                     else
                         _loadedBundles.Add(bundleName, new LoadedBundle(bundle));
