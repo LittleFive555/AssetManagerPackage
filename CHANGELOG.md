@@ -8,3 +8,7 @@
 
 ## 0.1.2 - 2025-01-16
 - 修复AssetBundleLoader中某个局部变量提示重复定义的问题
+
+## 0.1.3 - 2025-05-14
+
+- AssetManager添加字段UseAB，可以设置是否使用AssetBundle

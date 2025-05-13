@@ -19,16 +19,20 @@ namespace EdenMeng.AssetManager
         {
             get
             {
-    #if UNITY_EDITOR
-                if (_assetLoader == null)
+                if (UseAB)
                     _assetLoader = new BundledAssetLoader();
-    #endif
-                if (_assetLoader == null)
-                    throw new Exception();
+                else
+                    _assetLoader = new DatabaseAssetLoader();
+
                 return _assetLoader;
             }
         }
-        
+#if UNITY_EDITOR
+        public static bool UseAB = false;
+#else
+        public static bool UseAB = true;
+#endif
+
         public static T LoadAsset<T>(string path) where T : UnityEngine.Object
         {
             return AssetLoader.LoadAsset<T>(path);
