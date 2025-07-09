@@ -14,38 +14,41 @@ namespace EdenMeng.AssetManager
 
     public class AssetManager
     {
-        private static IAssetLoader _assetLoader;
-        private static IAssetLoader AssetLoader
-        {
-            get
-            {
-                if (UseAB)
-                    _assetLoader = new BundledAssetLoader();
-                else
-                    _assetLoader = new DatabaseAssetLoader();
-
-                return _assetLoader;
-            }
-        }
-#if UNITY_EDITOR
         public static bool UseAB = false;
+
+        private static IAssetLoader _assetLoader;
+
+        public static void Initialize()
+        {
+#if UNITY_EDITOR
+            if (UseAB)
+                _assetLoader = new BundledAssetLoader();
+            else
+                _assetLoader = new DatabaseAssetLoader();
 #else
-        public static bool UseAB = true;
+            _assetLoader = new BundledAssetLoader();
 #endif
+        }
 
         public static T LoadAsset<T>(string path) where T : UnityEngine.Object
         {
-            return AssetLoader.LoadAsset<T>(path);
+            if (_assetLoader == null)
+                throw new NullReferenceException("AssetManager is not initialized. Please call AssetManager.Initialize(bool).");
+            return _assetLoader.LoadAsset<T>(path);
         }
 
         public static IEnumerator LoadAssetAsync<T>(string path, Action<T> onComplete) where T : UnityEngine.Object
         {
-            return AssetLoader.LoadAssetAsync<T>(path, onComplete);
+            if (_assetLoader == null)
+                throw new NullReferenceException("AssetManager is not initialized. Please call AssetManager.Initialize(bool).");
+            return _assetLoader.LoadAssetAsync<T>(path, onComplete);
         }
 
         public static void UnloadAsset<T>(T obj) where T : UnityEngine.Object
         {
-            AssetLoader.UnloadAsset(obj);
+            if (_assetLoader == null)
+                throw new NullReferenceException("AssetManager is not initialized. Please call AssetManager.Initialize(bool).");
+            _assetLoader.UnloadAsset(obj);
         }
     }
 }
