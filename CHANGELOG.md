@@ -12,3 +12,7 @@
 ## 0.1.3 - 2025-05-14
 
 - AssetManager添加字段UseAB，可以设置是否使用AssetBundle
+
+## 0.1.4 - 2025-07-09
+- 修复AssetManager在构建AB时的编译报错
+- AssetManager添加主动初始化方法
