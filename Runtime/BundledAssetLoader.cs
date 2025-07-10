@@ -21,7 +21,6 @@ namespace EdenMeng.AssetManager
 
         private Dictionary<object, LoadedAsset> _loadedAssets = new Dictionary<object, LoadedAsset>();
 
-
         private void Initialize()
         {
             _initialized = true;

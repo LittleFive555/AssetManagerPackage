@@ -14,40 +14,43 @@ namespace EdenMeng.AssetManager
 
     public class AssetManager
     {
-        public static bool UseAB = false;
-
         private static IAssetLoader _assetLoader;
 
-        public static void Initialize()
+        public static void InitWithDatabase()
         {
-#if UNITY_EDITOR
-            if (UseAB)
-                _assetLoader = new BundledAssetLoader();
-            else
-                _assetLoader = new DatabaseAssetLoader();
-#else
+            _assetLoader = new DatabaseAssetLoader();
+        }
+
+        public static void InitWithAssetBundle(IAssetBundlePath rootPath)
+        {
+            AssetConstPath.Initialize(rootPath);
             _assetLoader = new BundledAssetLoader();
-#endif
+        }
+
+        public static void InitWithAssetBundle()
+        {
+            AssetConstPath.Initialize(new DefaultAssetBundlePath());
+            _assetLoader = new BundledAssetLoader();
         }
 
         public static T LoadAsset<T>(string path) where T : UnityEngine.Object
         {
             if (_assetLoader == null)
-                throw new NullReferenceException("AssetManager is not initialized. Please call AssetManager.Initialize(bool).");
+                throw new NullReferenceException("AssetManager is not initialized. Please call AssetManager.InitWithDatabase() or AssetManager.InitWithAssetBundle().");
             return _assetLoader.LoadAsset<T>(path);
         }
 
         public static IEnumerator LoadAssetAsync<T>(string path, Action<T> onComplete) where T : UnityEngine.Object
         {
             if (_assetLoader == null)
-                throw new NullReferenceException("AssetManager is not initialized. Please call AssetManager.Initialize(bool).");
+                throw new NullReferenceException("AssetManager is not initialized. Please call AssetManager.InitWithDatabase() or AssetManager.InitWithAssetBundle().");
             return _assetLoader.LoadAssetAsync<T>(path, onComplete);
         }
 
         public static void UnloadAsset<T>(T obj) where T : UnityEngine.Object
         {
             if (_assetLoader == null)
-                throw new NullReferenceException("AssetManager is not initialized. Please call AssetManager.Initialize(bool).");
+                throw new NullReferenceException("AssetManager is not initialized. Please call AssetManager.InitWithDatabase() or AssetManager.InitWithAssetBundle().");
             _assetLoader.UnloadAsset(obj);
         }
     }
