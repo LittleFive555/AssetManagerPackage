@@ -16,10 +16,12 @@ namespace EdenMeng.AssetManager
     {
         private static IAssetLoader _assetLoader;
 
+#if UNITY_EDITOR
         public static void InitWithDatabase()
         {
             _assetLoader = new DatabaseAssetLoader();
         }
+#endif
 
         public static void InitWithAssetBundle(IAssetBundlePath rootPath)
         {

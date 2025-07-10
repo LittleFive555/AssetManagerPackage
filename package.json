@@ -1,6 +1,6 @@
 {
     "name": "com.edenmeng.assetmanager",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "displayName": "Asset Manager by Eden Meng",
     "description": "Asset Manager is used to load assets in Editor and Runtime in the same way. You could directly load a single specify asset or load a bundle of assets.",
     "author": {
