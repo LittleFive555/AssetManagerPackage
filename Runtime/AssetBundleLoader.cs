@@ -11,11 +11,11 @@ namespace EdenMeng.AssetManager
         private AssetBundleDependencies _assetBundleDependencies;
         public AssetBundleDependencies AssetBundleDependencies
         {
-        get
-        {
-            if (!_initialized)
-                Initialize();
-            return _assetBundleDependencies;
+            get
+            {
+                if (!_initialized)
+                    Initialize();
+                return _assetBundleDependencies;
             }
         }
 
@@ -89,6 +89,7 @@ namespace EdenMeng.AssetManager
 
         private IEnumerator LoadAssetBundleAsync(string bundleName, Action<AssetBundle> onComplete)
         {
+            // 已经加载好了，直接返回
             if (_loadedBundles.TryGetValue(bundleName, out var loadedBundle))
             {
                 loadedBundle.UseCount++;
@@ -96,16 +97,20 @@ namespace EdenMeng.AssetManager
                 yield break;
             }
 
+            // 已经在加载中
             if (_bundleLoadCallbacks.TryGetValue(bundleName, out var callbackList))
             {
+                bool isComplete = false;
                 onComplete += (bundle) =>
                 {
                     if (_loadedBundles.TryGetValue(bundleName, out loadedBundle))
                         loadedBundle.UseCount++;
                     else
                         _loadedBundles.Add(bundleName, new LoadedBundle(bundle));
+                    isComplete = true;
                 };
                 callbackList.Add(onComplete);
+                yield return new WaitUntil(() => isComplete);
                 yield break;
             }
 
