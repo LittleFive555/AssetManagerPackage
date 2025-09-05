@@ -52,7 +52,7 @@ namespace EdenMeng.AssetManager
             }
 
             if (!_loadedAssets.TryGetValue(asset, out var loadedAsset))
-                _loadedAssets.Add(asset, new LoadedAsset(asset, path));
+                _loadedAssets.Add(asset, new LoadedAsset(asset, path, bundleName));
             else
                 loadedAsset.UseCount++;
             return asset;
@@ -87,9 +87,9 @@ namespace EdenMeng.AssetManager
                 yield break;
             }
             if (!_loadedAssets.TryGetValue(asset, out var loadedAsset))
-                    _loadedAssets.Add(asset, new LoadedAsset(asset, path));
-                else
-                    loadedAsset.UseCount++;
+                _loadedAssets.Add(asset, new LoadedAsset(asset, path, bundleName));
+            else
+                loadedAsset.UseCount++;
             onComplete?.Invoke(asset);
         }
 
@@ -103,26 +103,24 @@ namespace EdenMeng.AssetManager
             loadedAsset.UseCount--;
             if (loadedAsset.UseCount <= 0)
                 _loadedAssets.Remove(asset);
-
-            var bundleName = AssetBundleMapping.GetBundleName(loadedAsset.AssetPath);
-            Debug.Assert(!string.IsNullOrEmpty(bundleName));
-            AssetBundleManager.UnloadBundleAndDependencies(bundleName);
+            
+            // 这里是要将计数传递给bundle，否则会出现bundle泄露
+            AssetBundleManager.UnloadBundleAndDependencies(loadedAsset.BundleName);
         }
 
         private class LoadedAsset
         {
-            private object _asset;
-            public object Asset => _asset;
-
-            private string _assetPath;
-            public string AssetPath => _assetPath;
+            public object Asset { get; }
+            public string AssetPath { get; }
+            public string BundleName { get; }
 
             public int UseCount;
 
-            public LoadedAsset(object asset, string assetPath)
+            public LoadedAsset(object asset, string assetPath, string bundleName)
             {
-                _asset = asset;
-                _assetPath = assetPath;
+                Asset = asset;
+                AssetPath = assetPath;
+                BundleName = bundleName;
                 UseCount = 1;
             }
         }
