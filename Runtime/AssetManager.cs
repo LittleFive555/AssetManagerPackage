@@ -19,18 +19,33 @@ namespace EdenMeng.AssetManager
 #if UNITY_EDITOR
         public static void InitWithDatabase()
         {
+            if (_assetLoader != null)
+            {
+                Debug.LogError("[Asset] Repeated initializing AssetManager.");
+                return;
+            }
             _assetLoader = new DatabaseAssetLoader();
         }
 #endif
 
         public static void InitWithAssetBundle(IAssetBundlePath rootPath)
         {
+            if (_assetLoader != null)
+            {
+                Debug.LogError("[Asset] Repeated initializing AssetManager.");
+                return;
+            }
             AssetConstPath.Initialize(rootPath);
             _assetLoader = new BundledAssetLoader();
         }
 
         public static void InitWithAssetBundle()
         {
+            if (_assetLoader != null)
+            {
+                Debug.LogError("[Asset] Repeated initializing AssetManager.");
+                return;
+            }
             AssetConstPath.Initialize(new DefaultAssetBundlePath());
             _assetLoader = new BundledAssetLoader();
         }
