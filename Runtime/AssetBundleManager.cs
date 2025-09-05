@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Text;
 using UnityEngine;
 
 namespace EdenMeng.AssetManager
@@ -14,7 +15,7 @@ namespace EdenMeng.AssetManager
     public class AssetBundleManager
     {
         private static IAssetBundleLoader _assetBundleLoader;
-        public static IAssetBundleLoader AssetBundleLoader 
+        public static IAssetBundleLoader AssetBundleLoader
         {
             get
             {
@@ -37,6 +38,19 @@ namespace EdenMeng.AssetManager
         public static void UnloadBundleAndDependencies(string assetBundleName)
         {
             AssetBundleLoader.UnloadBundleAndDependencies(assetBundleName);
+        }
+
+        public static void LogAllLoadedBundle()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            int count = 0;
+            foreach (var assetBundle in AssetBundle.GetAllLoadedAssetBundles())
+            {
+                stringBuilder.AppendLine(assetBundle.name);
+                count++;
+            }
+            stringBuilder.AppendLine($"LoadedCount: {count}");
+            Debug.Log(stringBuilder.ToString());
         }
     }
 }

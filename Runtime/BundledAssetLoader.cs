@@ -35,10 +35,22 @@ namespace EdenMeng.AssetManager
         {
             var bundleName = AssetBundleMapping.GetBundleName(path);
             if (string.IsNullOrEmpty(bundleName))
+            {
+                Debug.LogError($"[Asset] Asset <{path}> is not exists.");
                 return null;
+            }
 
             AssetBundle assetBundle = AssetBundleManager.LoadBundleAndDependencies(bundleName);
+            if (assetBundle == null)
+                return null;
+            
             var asset = assetBundle.LoadAsset<T>(path);
+            if (asset == null)
+            {
+                Debug.LogError($"[Asset] Asset <{path}> load failed.");
+                return null;
+            }
+
             if (!_loadedAssets.TryGetValue(asset, out var loadedAsset))
                 _loadedAssets.Add(asset, new LoadedAsset(asset, path));
             else
@@ -50,18 +62,34 @@ namespace EdenMeng.AssetManager
         {
             var bundleName = AssetBundleMapping.GetBundleName(path);
             if (string.IsNullOrEmpty(bundleName))
+            {
+                Debug.LogError($"[Asset] Asset <{path}> is not exists.");
+                onComplete?.Invoke(null);
                 yield break;
+            }
 
             AssetBundle assetBundle = null;
             yield return AssetBundleManager.LoadBundleAndDependenciesAsync(bundleName, (bundle) => assetBundle = bundle);
 
+            if (assetBundle == null)
+            {
+                onComplete?.Invoke(null);
+                yield break;
+            }
+
             var request = assetBundle.LoadAssetAsync<T>(path);
             yield return request;
             var asset = request.asset as T;
+            if (asset == null)
+            {
+                Debug.LogError($"[Asset] Asset <{path}> load failed (Async).");
+                onComplete?.Invoke(null);
+                yield break;
+            }
             if (!_loadedAssets.TryGetValue(asset, out var loadedAsset))
-                _loadedAssets.Add(asset, new LoadedAsset(asset, path));
-            else
-                loadedAsset.UseCount++;
+                    _loadedAssets.Add(asset, new LoadedAsset(asset, path));
+                else
+                    loadedAsset.UseCount++;
             onComplete?.Invoke(asset);
         }
 
