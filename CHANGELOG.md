@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0 - 2025-09-05
+- 添加构建AssetBundle的EditorWindow
+
 ## 0.2.1 - 2025-09-05
 - 默认打包路径改为Application.streamingAssets
 - 打AssetBundle代码中的路径改为直接使用 AssetConstPath 中的定义

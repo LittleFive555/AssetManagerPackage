@@ -7,11 +7,9 @@ namespace EdenMeng.AssetManager.Editor
 {
     public class CreateAssetBundles
     {
-        [MenuItem("Assets/Build AssetBundles")]
-        public static void BuildAllAssetBundles()
+        public static void BuildAllAssetBundles(AssetBundleBuildInfo assetBundleBuildInfo)
         {
-            AssetConstPath.Initialize(new DefaultAssetBundlePath());
-            string assetBundleDirectory = AssetConstPath.BundlePath;
+            string assetBundleDirectory = Path.Combine(assetBundleBuildInfo.OutputPath, AssetConstPath.AssetBundlesDirName);
             if (!Directory.Exists(assetBundleDirectory))
             {
                 Directory.CreateDirectory(assetBundleDirectory);
@@ -19,16 +17,16 @@ namespace EdenMeng.AssetManager.Editor
             // 构建资源AssetBundle
             var manifest = BuildPipeline.BuildAssetBundles(assetBundleDirectory,
                                             BuildAssetBundleOptions.None,
-                                            BuildTarget.StandaloneWindows);
+                                            assetBundleBuildInfo.BuildTarget);
 
             CheckCircularDependenciesAndWarning(manifest); // TODO 应该在构建之前使用AssetDatabase的方法来检查是否有循环依赖，而不是在构建完成后
 
             // 构建额外的AssetBundle信息资源文件
-            AssetBundleBuild bundlesInfoBuild = CreateBundlesInfoBuild(assetBundleDirectory, manifest);
+            AssetBundleBuild bundlesInfoBuild = CreateBundlesInfoBuild(assetBundleDirectory, manifest, assetBundleBuildInfo.BundleInfoPath);
             BuildPipeline.BuildAssetBundles(assetBundleDirectory,
                                             new AssetBundleBuild[] { bundlesInfoBuild },
                                             BuildAssetBundleOptions.None,
-                                            BuildTarget.StandaloneWindows);
+                                            assetBundleBuildInfo.BuildTarget);
         }
 
         private static void CheckCircularDependenciesAndWarning(AssetBundleManifest manifest)
@@ -47,7 +45,7 @@ namespace EdenMeng.AssetManager.Editor
             }
         }
 
-        private static AssetBundleBuild CreateBundlesInfoBuild(string assetBundleDirectory, AssetBundleManifest manifest)
+        private static AssetBundleBuild CreateBundlesInfoBuild(string assetBundleDirectory, AssetBundleManifest manifest, string bundleInfoPath)
         {
             BundlesInfoCollection bundlesInfoCollection = ScriptableObject.CreateInstance<BundlesInfoCollection>();
             foreach (var assetBundleName in manifest.GetAllAssetBundles())
@@ -61,7 +59,7 @@ namespace EdenMeng.AssetManager.Editor
                 });
                 assetBundle.Unload(true);
             }
-            var assetName = $"Assets/{AssetConstPath.BundleInfoAssetName}.asset";
+            var assetName = Path.Combine(bundleInfoPath, $"{AssetConstPath.BundleInfoAssetName}.asset");
             AssetDatabase.CreateAsset(bundlesInfoCollection, assetName);
             AssetDatabase.SaveAssets();
             AssetBundleBuild bundlesInfoBuild = new AssetBundleBuild
