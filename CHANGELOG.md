@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 - 2025-09-05
+- 默认打包路径改为Application.streamingAssets
+- 打AssetBundle代码中的路径改为直接使用 AssetConstPath 中的定义
+- 打AssetBundle的方法 BuildAllAssetBundles() 改为 public
+
 ## 0.2.0 - 2025-09-05
 - 添加完整Log并可设置是否开启Log
 - 解决开始异步加载后立即释放的问题

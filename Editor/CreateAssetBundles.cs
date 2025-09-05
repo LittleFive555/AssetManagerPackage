@@ -8,9 +8,10 @@ namespace EdenMeng.AssetManager.Editor
     public class CreateAssetBundles
     {
         [MenuItem("Assets/Build AssetBundles")]
-        static void BuildAllAssetBundles()
+        public static void BuildAllAssetBundles()
         {
-            string assetBundleDirectory = "Assets/AssetBundles";
+            AssetConstPath.Initialize(new DefaultAssetBundlePath());
+            string assetBundleDirectory = AssetConstPath.BundlePath;
             if (!Directory.Exists(assetBundleDirectory))
             {
                 Directory.CreateDirectory(assetBundleDirectory);
@@ -24,8 +25,10 @@ namespace EdenMeng.AssetManager.Editor
 
             // 构建额外的AssetBundle信息资源文件
             AssetBundleBuild bundlesInfoBuild = CreateBundlesInfoBuild(assetBundleDirectory, manifest);
-            BuildPipeline.BuildAssetBundles(assetBundleDirectory, new AssetBundleBuild[] { bundlesInfoBuild }, BuildAssetBundleOptions.None,
-                BuildTarget.StandaloneWindows);
+            BuildPipeline.BuildAssetBundles(assetBundleDirectory,
+                                            new AssetBundleBuild[] { bundlesInfoBuild },
+                                            BuildAssetBundleOptions.None,
+                                            BuildTarget.StandaloneWindows);
         }
 
         private static void CheckCircularDependenciesAndWarning(AssetBundleManifest manifest)
@@ -58,12 +61,12 @@ namespace EdenMeng.AssetManager.Editor
                 });
                 assetBundle.Unload(true);
             }
-            var assetName = "Assets/BundlesInfo.asset";
+            var assetName = $"Assets/{AssetConstPath.BundleInfoAssetName}.asset";
             AssetDatabase.CreateAsset(bundlesInfoCollection, assetName);
             AssetDatabase.SaveAssets();
             AssetBundleBuild bundlesInfoBuild = new AssetBundleBuild
             {
-                assetBundleName = "bundleinfo",
+                assetBundleName = AssetConstPath.BundleInfoBundleName,
                 assetNames = new string[] { assetName },
             };
             return bundlesInfoBuild;

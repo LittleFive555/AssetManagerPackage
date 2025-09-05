@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using UnityEngine;
 
 namespace EdenMeng.AssetManager
 {
@@ -26,6 +27,6 @@ namespace EdenMeng.AssetManager
 
     public struct DefaultAssetBundlePath : IAssetBundlePath
     {
-        public string Path => "Assets";
+        public string Path => Application.streamingAssetsPath;
     }
 }
