@@ -51,14 +51,19 @@ namespace EdenMeng.AssetManager
         public IEnumerator LoadBundleAndDependenciesAsync(string assetBundleName, Action<AssetBundle> onComplete)
         {
             // NOTE 这里需要先加载目标bundle，构建引用信息；然后再加载依赖bundle
-            yield return LoadAssetBundleAsync(assetBundleName, onComplete);
-            
+            yield return LoadAssetBundleAsync(assetBundleName);
+
             var allDependencies = AssetBundleDependencies.GetAllDependencies(assetBundleName);
             if (allDependencies != null && allDependencies.Count > 0)
             {
                 foreach (var dependency in allDependencies)
-                    yield return LoadAssetBundleAsync(dependency, null); // 这里依次加载所有的依赖，考虑是否可以同时加载所有的依赖？是否能更快？
+                    yield return LoadAssetBundleAsync(dependency); // 这里依次加载所有的依赖，考虑是否可以同时加载所有的依赖？是否能更快？
             }
+
+            if (_bundlesLoadingInfo.TryGetValue(assetBundleName, out var bundleInfo))
+                onComplete?.Invoke(bundleInfo.Bundle);
+            else
+                onComplete?.Invoke(null);
         }
 
         public void UnloadBundleAndDependencies(string assetBundleName)
@@ -72,7 +77,7 @@ namespace EdenMeng.AssetManager
 
         private AssetBundle LoadOrGetAssetBundle(string bundleName)
         {
-            BundleLoadingInfo loadingInfo = GetBundleLoadingInfo(bundleName);
+            BundleLoadingInfo loadingInfo = GetOrCreateBundleLoadingInfo(bundleName);
             if (loadingInfo == null)
             {
                 Debug.LogError($"[Asset] Bundle <{bundleName}> is not exists.");
@@ -81,16 +86,15 @@ namespace EdenMeng.AssetManager
             return loadingInfo.Load();
         }
 
-        private IEnumerator LoadAssetBundleAsync(string bundleName, Action<AssetBundle> onComplete)
+        private IEnumerator LoadAssetBundleAsync(string bundleName)
         {
-            BundleLoadingInfo loadingInfo = GetBundleLoadingInfo(bundleName);
+            BundleLoadingInfo loadingInfo = GetOrCreateBundleLoadingInfo(bundleName);
             if (loadingInfo == null)
             {
                 Debug.LogError($"[Asset] Bundle <{bundleName}> is not exists.");
-                onComplete?.Invoke(null);
                 yield break;
             }
-            yield return loadingInfo.LoadAsync(onComplete);
+            yield return loadingInfo.LoadAsync(null);
         }
 
         private void DecrementCountOrUnloadAssetBundle(string bundleName)
@@ -105,7 +109,7 @@ namespace EdenMeng.AssetManager
                 _bundlesLoadingInfo.Remove(bundleName);
         }
 
-        private BundleLoadingInfo GetBundleLoadingInfo(string bundleName)
+        private BundleLoadingInfo GetOrCreateBundleLoadingInfo(string bundleName)
         {
             BundleLoadingInfo loadingInfo;
             if (!_bundlesLoadingInfo.TryGetValue(bundleName, out loadingInfo))

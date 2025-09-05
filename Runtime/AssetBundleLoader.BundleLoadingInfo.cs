@@ -14,6 +14,7 @@ namespace EdenMeng.AssetManager
             private AssetBundleCreateRequest _request = null;
 
             private AssetBundle _assetBundle;
+            public AssetBundle Bundle => _assetBundle;
 
             private int _useCount;
 
