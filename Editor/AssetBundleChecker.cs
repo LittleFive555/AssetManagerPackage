@@ -14,9 +14,9 @@ namespace EdenMeng.AssetManager.Editor
             {
                 string assetPath = AssetDatabase.GetAssetPath(selectedAssets[0]);
                 if (TryGetBundleName(assetPath, out var bundleName))
-                    Debug.LogFormat("Bundle name <{0}> for asset <{1}>", bundleName, assetPath);
+                    Debug.LogFormat("[Asset] Bundle name <{0}> for asset <{1}>", bundleName, assetPath);
                 else
-                    Debug.LogFormat("Didn't set any bundle to asset <{0}>", assetPath);
+                    Debug.LogFormat("[Asset] Didn't set any bundle to asset <{0}>", assetPath);
             }
         }
 

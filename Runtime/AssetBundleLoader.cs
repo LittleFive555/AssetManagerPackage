@@ -80,7 +80,7 @@ namespace EdenMeng.AssetManager
             BundleLoadingInfo loadingInfo = GetOrCreateBundleLoadingInfo(bundleName);
             if (loadingInfo == null)
             {
-                Debug.LogError($"[Asset] Bundle <{bundleName}> is not exists.");
+                AssetLogger.LogError($"[Asset] Bundle is not exists: \"{bundleName}\".");
                 return null;
             }
             return loadingInfo.Load();
@@ -91,7 +91,7 @@ namespace EdenMeng.AssetManager
             BundleLoadingInfo loadingInfo = GetOrCreateBundleLoadingInfo(bundleName);
             if (loadingInfo == null)
             {
-                Debug.LogError($"[Asset] Bundle <{bundleName}> is not exists.");
+                AssetLogger.LogError($"[Asset] Bundle is not exists: \"{bundleName}\".");
                 yield break;
             }
             yield return loadingInfo.LoadAsync(null);
@@ -101,7 +101,7 @@ namespace EdenMeng.AssetManager
         {
             if (!_bundlesLoadingInfo.TryGetValue(bundleName, out var loadingInfo))
             {
-                Debug.LogWarningFormat("[Asset] Trying to unload a AssetBundle not loaded before. AssetBundle Name:{0}", bundleName);
+                AssetLogger.LogWarning($"[Asset] Trying to unload a AssetBundle not loaded before. AssetBundle Name: \"{bundleName}\"");
                 return;
             }
 
@@ -126,10 +126,10 @@ namespace EdenMeng.AssetManager
         private void LogCurrentAssetBundleStatus()
         {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("Bundles: ");
+            stringBuilder.AppendLine("[Asset] Bundles: ");
             foreach (var loadingInfo in _bundlesLoadingInfo)
                 stringBuilder.AppendLine(loadingInfo.ToString());
-            Debug.Log(stringBuilder.ToString());
+            AssetLogger.Log(stringBuilder.ToString());
         }
     }
 }

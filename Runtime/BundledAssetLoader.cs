@@ -36,10 +36,11 @@ namespace EdenMeng.AssetManager
             var bundleName = AssetBundleMapping.GetBundleName(path);
             if (string.IsNullOrEmpty(bundleName))
             {
-                Debug.LogError($"[Asset] Asset <{path}> is not exists.");
+                AssetLogger.LogError($"[Asset] Asset is not exists: \"{path}\".");
                 return null;
             }
 
+            AssetLogger.Log($"[Asset] Start Load asset: \"{path}\". In bundle: \"{bundleName}\"");
             AssetBundle assetBundle = AssetBundleManager.LoadBundleAndDependencies(bundleName);
             if (assetBundle == null)
                 return null;
@@ -47,14 +48,18 @@ namespace EdenMeng.AssetManager
             var asset = assetBundle.LoadAsset<T>(path);
             if (asset == null)
             {
-                Debug.LogError($"[Asset] Asset <{path}> load failed.");
+                AssetLogger.LogError($"[Asset] Asset Load failed: \"{path}\".");
                 return null;
             }
 
             if (!_loadedAssets.TryGetValue(asset, out var loadedAsset))
-                _loadedAssets.Add(asset, new LoadedAsset(asset, path, bundleName));
+            {
+                loadedAsset = new LoadedAsset(asset, path, bundleName);
+                _loadedAssets.Add(asset, loadedAsset);
+            }
             else
                 loadedAsset.UseCount++;
+            AssetLogger.Log($"[Asset] End Load asset: \"{path}\". Counter {loadedAsset.UseCount}.");
             return asset;
         }
 
@@ -63,11 +68,12 @@ namespace EdenMeng.AssetManager
             var bundleName = AssetBundleMapping.GetBundleName(path);
             if (string.IsNullOrEmpty(bundleName))
             {
-                Debug.LogError($"[Asset] Asset <{path}> is not exists.");
+                AssetLogger.LogError($"[Asset] Asset is not exists: \"{path}\".");
                 onComplete?.Invoke(null);
                 yield break;
             }
 
+            AssetLogger.Log($"[Asset] Start AsyncLoad asset: \"{path}\". In bundle: \"{bundleName}\"");
             AssetBundle assetBundle = null;
             yield return AssetBundleManager.LoadBundleAndDependenciesAsync(bundleName, (bundle) => assetBundle = bundle);
 
@@ -82,14 +88,18 @@ namespace EdenMeng.AssetManager
             var asset = request.asset as T;
             if (asset == null)
             {
-                Debug.LogError($"[Asset] Asset <{path}> load failed (Async).");
+                AssetLogger.LogError($"[Asset] Asset AsyncLoad failed: \"{path}\".");
                 onComplete?.Invoke(null);
                 yield break;
             }
             if (!_loadedAssets.TryGetValue(asset, out var loadedAsset))
-                _loadedAssets.Add(asset, new LoadedAsset(asset, path, bundleName));
+            {
+                loadedAsset = new LoadedAsset(asset, path, bundleName);
+                _loadedAssets.Add(asset, loadedAsset);
+            }
             else
                 loadedAsset.UseCount++;
+            AssetLogger.Log($"[Asset] End AsyncLoaded Asset: \"{path}\". Counter {loadedAsset.UseCount}");
             onComplete?.Invoke(asset);
         }
 
@@ -97,7 +107,7 @@ namespace EdenMeng.AssetManager
         {
             if (!_loadedAssets.TryGetValue(asset, out var loadedAsset))
             {
-                Debug.LogWarningFormat("Trying to unload an asset not loaded before. Asset Name:{0}", asset.name);
+                AssetLogger.LogWarning($"[Asset] Trying to unload an asset not loaded before: \"{asset.name}\".");
                 return;
             }
             loadedAsset.UseCount--;

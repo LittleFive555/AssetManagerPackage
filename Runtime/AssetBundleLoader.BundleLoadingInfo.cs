@@ -31,11 +31,11 @@ namespace EdenMeng.AssetManager
                 // 已经加载好
                 if (_assetBundle != null)
                 {
-                    Debug.Log($"[Asset] Use loaded bundle <{_bundleName}>, Counter {counter}.");
+                    AssetLogger.Log($"[Asset] Use loaded bundle: \"{_bundleName}\", Counter {counter}.");
                     return _assetBundle;
                 }
 
-                Debug.Log($"[Asset] Load bundle <{_bundleName}>.");
+                AssetLogger.Log($"[Asset] Start Load bundle: \"{_bundleName}\".");
                 if (_request != null)
                 {
                     _assetBundle = _request.assetBundle;
@@ -45,7 +45,7 @@ namespace EdenMeng.AssetManager
                     var bundlePath = Path.Combine(AssetConstPath.BundlePath, _bundleName);
                     _assetBundle = AssetBundle.LoadFromFile(bundlePath);
                 }
-                Debug.Log($"[Asset] Load bundle <{_bundleName}> finished, Counter {counter}.");
+                AssetLogger.Log($"[Asset] End Load bundle: \"{_bundleName}\", Counter {counter}.");
 
                 return _assetBundle;
             }
@@ -58,23 +58,23 @@ namespace EdenMeng.AssetManager
                 // 已经加载好
                 if (_assetBundle != null)
                 {
-                    Debug.Log($"[Asset] Use loaded bundle (Async) <{_bundleName}>, Counter {counter}.");
+                    AssetLogger.Log($"[Asset] Use loaded bundle: \"{_bundleName}\", Counter {counter}.");
                     callback?.Invoke(_assetBundle);
                     yield break;
                 }
 
-                Debug.Log($"[Asset] Load bundle (Async) <{_bundleName}>.");
+                AssetLogger.Log($"[Asset] Start AsyncLoad bundle: \"{_bundleName}\".");
                 if (_request == null)
                 {
                     var bundlePath = Path.Combine(AssetConstPath.BundlePath, _bundleName);
                     _request = AssetBundle.LoadFromFileAsync(bundlePath);
                     yield return _request;
-                    Debug.Log($"[Asset] Load bundle (Async) <{_bundleName}> finished, Counter {counter}.");
+                    AssetLogger.Log($"[Asset] End AsyncLoad bundle: \"{_bundleName}\" finished, Counter {counter}.");
                 }
                 else
                 {
                     yield return new WaitUntil(() => _request.isDone);
-                    Debug.Log($"[Asset] Load bundle (Async) <{_bundleName}> wait finished, Counter {counter}.");
+                    AssetLogger.Log($"[Asset] End AsyncLoad bundle: \"{_bundleName}\" wait finished, Counter {counter}.");
                 }
                 
                 if (_request.assetBundle != null)
@@ -97,19 +97,19 @@ namespace EdenMeng.AssetManager
                         _request.assetBundle.Unload(true);
                         _request = null;
                     }
-                    Debug.Log($"[Asset] Unload bundle <{_bundleName}> released, Counter {counter}.");
+                    AssetLogger.Log($"[Asset] Released bundle: \"{_bundleName}\".");
                     return true;
                 }
                 else
                 {
-                    Debug.Log($"[Asset] Unload bundle <{_bundleName}>, Counter {counter}.");
+                    AssetLogger.Log($"[Asset] Decrease bundle counter: \"{_bundleName}\", {counter}.");
                     return false;
                 }
             }
 
             public override string ToString()
             {
-                return $"[Asset] Bundle<{_bundleName}> UseCount {_useCount}, isLoaded {_assetBundle != null}";
+                return $"[Asset] Bundle \"{_bundleName}\" counter {_useCount}, isLoaded {_assetBundle != null}";
             }
         }
     }

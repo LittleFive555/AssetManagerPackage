@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using UnityEngine;
 
 namespace EdenMeng.AssetManager
 {
@@ -21,7 +22,7 @@ namespace EdenMeng.AssetManager
         {
             if (_assetLoader != null)
             {
-                Debug.LogError("[Asset] Repeated initializing AssetManager.");
+                AssetLogger.LogError("[Asset] Repeated initializing AssetManager.");
                 return;
             }
             _assetLoader = new DatabaseAssetLoader();
@@ -32,7 +33,7 @@ namespace EdenMeng.AssetManager
         {
             if (_assetLoader != null)
             {
-                Debug.LogError("[Asset] Repeated initializing AssetManager.");
+                AssetLogger.LogError("[Asset] Repeated initializing AssetManager.");
                 return;
             }
             AssetConstPath.Initialize(rootPath);
@@ -43,31 +44,36 @@ namespace EdenMeng.AssetManager
         {
             if (_assetLoader != null)
             {
-                Debug.LogError("[Asset] Repeated initializing AssetManager.");
+                AssetLogger.LogError("[Asset] Repeated initializing AssetManager.");
                 return;
             }
             AssetConstPath.Initialize(new DefaultAssetBundlePath());
             _assetLoader = new BundledAssetLoader();
         }
 
+        public static void EnableLog(bool enable)
+        {
+            AssetLogger.IsEnabled = enable;
+        }
+
         public static T LoadAsset<T>(string path) where T : UnityEngine.Object
         {
             if (_assetLoader == null)
-                throw new NullReferenceException("AssetManager is not initialized. Please call AssetManager.InitWithDatabase() or AssetManager.InitWithAssetBundle().");
+                throw new NullReferenceException("[Asset] AssetManager is not initialized. Please call AssetManager.InitWithDatabase() or AssetManager.InitWithAssetBundle().");
             return _assetLoader.LoadAsset<T>(path);
         }
 
         public static IEnumerator LoadAssetAsync<T>(string path, Action<T> onComplete) where T : UnityEngine.Object
         {
             if (_assetLoader == null)
-                throw new NullReferenceException("AssetManager is not initialized. Please call AssetManager.InitWithDatabase() or AssetManager.InitWithAssetBundle().");
+                throw new NullReferenceException("[Asset] AssetManager is not initialized. Please call AssetManager.InitWithDatabase() or AssetManager.InitWithAssetBundle().");
             return _assetLoader.LoadAssetAsync<T>(path, onComplete);
         }
 
         public static void UnloadAsset<T>(T obj) where T : UnityEngine.Object
         {
             if (_assetLoader == null)
-                throw new NullReferenceException("AssetManager is not initialized. Please call AssetManager.InitWithDatabase() or AssetManager.InitWithAssetBundle().");
+                throw new NullReferenceException("[Asset] AssetManager is not initialized. Please call AssetManager.InitWithDatabase() or AssetManager.InitWithAssetBundle().");
             _assetLoader.UnloadAsset(obj);
         }
     }

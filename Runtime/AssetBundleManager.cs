@@ -42,7 +42,7 @@ namespace EdenMeng.AssetManager
 
         public static void LogAllLoadedBundle()
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new StringBuilder("[Asset] ");
             int count = 0;
             foreach (var assetBundle in AssetBundle.GetAllLoadedAssetBundles())
             {
@@ -50,7 +50,7 @@ namespace EdenMeng.AssetManager
                 count++;
             }
             stringBuilder.AppendLine($"LoadedCount: {count}");
-            Debug.Log(stringBuilder.ToString());
+            AssetLogger.Log(stringBuilder.ToString());
         }
     }
 }

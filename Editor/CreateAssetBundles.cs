@@ -36,7 +36,7 @@ namespace EdenMeng.AssetManager.Editor
                 for (int i = 0; i < circularDependencies.Count; i++)
                 {
                     var circularDependency = circularDependencies[i];
-                    string logInfo = "Circular Dependency " + i + ": ";
+                    string logInfo = "[Asset] Circular Dependency " + i + ": ";
                     foreach (var dependency in circularDependency)
                         logInfo += dependency + "->";
                     Debug.LogWarning(logInfo);
